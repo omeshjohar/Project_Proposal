@@ -1,0 +1,136 @@
+*The Statistical Eye: Patterns in visual inferences*
+========================================================
+Omesh Johar
+--------------------------------------------------------
+STAT 585X Project Proposal
+--------------------------------------------------------
+
+**Topic**
+
+This project is an attempt to explore ways in which visual inferences are drawn.
+
+**Motivation**
+
+Visual inference refers to the act (and the outcome) of drawing a statistical inference based on a visualization of data. Numerical statistics are not always available. Often, people need to draw inferences based on visual representations of data. However, more research is needed to understand the process by which people draw visual inferences.
+
+**Questions**
+
+Are there any patterns in the way in which visual inferences are drawn? When presented with visual representations, how long do people take to form an inference? In doing so, do people sequentially go from one image to another, noticing minute details of every image? Or, is it a more top-down process, whereby people try to chunk different images based on certain attributes and later study every group? These are some of the questions of interest.
+
+**Data**
+
+Twenty-four students participated in an eye-tracking study. Each participant looked at nine line-ups of plots. For each line-up, participants selected a plot which was the "odd-one-out". Available data contain information about the x-y coordinates of their gaze (both eyes) along with time-stamps. Data for each combination of line-up and participant appear in a different file. This study was conducted by Dr. Dianne Cook and her colleagues. She will make the data available.  
+
+**Tasks**
+Data from different line-ups for each participant need to be collated and merged before processing. Therefore, I anticipate the use of "melting", aggregation, summarization, etc. Processing would involve identification of patterns in the way each participant arrived at an inference. Thus, I will examine the flow of gaze from one plot to another. In so doing, I will rely on the total time spent on a line-up, time spent on each plot, parts of each plot that participants paid attention to, and so on. 
+
+Given below is some R code which helps creating a usable data file from raw data from a participant (courtesy: Dr. Dianne Cook). 
+
+
+```r
+ET <- function(pdf) {
+    library(ggplot2)
+    data.path <- file.path(file.choose())
+    data <- read.csv(data.path)
+    data.name <- unlist(strsplit(unlist(basename(data.path)), ".csv"))
+    data.people <- unlist(strsplit(data.name, "_"))[1]
+    data.test <- unlist(strsplit(data.name, "_"))[2]
+    data.choose <- as.numeric(unlist(strsplit(data.name, "_"))[3])
+    data$people <- data.people
+    data$test <- data.test
+    data$choose <- data.choose
+    data$Time2 <- 1:nrow(data)
+    data$Time3 <- data$Time2%/%86 + 1
+    data <- unique(data)
+    data$Xdiff <- abs(data$Left.Gaze.Point.X - data$Right.Gaze.Point.X)
+    data$Ydiff <- abs(data$Left.Gaze.Point.Y - data$Right.Gaze.Point.Y)
+    data$Gaze.X <- 0.5 * (data$Left.Gaze.Point.X + data$Right.Gaze.Point.X)
+    data$Gaze.Y <- 0.5 * (data$Left.Gaze.Point.Y + data$Right.Gaze.Point.Y)
+    data$Ignore <- 1
+    data[data$Xdiff < mean(data$Xdiff) + qnorm(0.9) * sd(data$Xdiff) & data$Ydiff < 
+        mean(data$Ydiff) + qnorm(0.9) * sd(data$Ydiff), ]$Ignore <- 0
+    nX <- 5
+    nY <- 4
+    lengthX <- 1680
+    lengthY <- 1050
+    if (data.test %in% c("D3", "D4", "M1", "M2", "M3", "M4", "M5", "M6", "M7", 
+        "M8")) {
+        X.Start <- lengthX/2 - lengthY * (1040/1080)/2 + lengthY * (67/1080)
+        Y.Start <- lengthY * 0 + lengthY * (20/1080)
+        X.End <- lengthX/2 - lengthY * (1040/1080)/2 + lengthY * (1015/1080)
+        Y.End <- lengthY * 0 + lengthY * (1020/1080)
+        X.Range <- (X.End - X.Start)/nX
+        Y.Range <- (Y.End - Y.Start)/nY
+    }
+    if (data.test %in% c("D1", "D2")) {
+        X.Start <- lengthX/2 - lengthY * (1292/1080)/2 + lengthY * (36/1080)
+        Y.Start <- lengthY * 0 + lengthY * (20/1080)
+        X.End <- lengthX/2 - lengthY * (1292/1080)/2 + lengthY * (1270/1080)
+        Y.End <- lengthY * 0 + lengthY * (1020/1080)
+        X.Range <- (X.End - X.Start)/nX
+        Y.Range <- (Y.End - Y.Start)/nY
+    }
+    data$Plot <- 0
+    data$Row <- 0
+    data$Col <- 0
+    
+    ###### test
+    data[data$Gaze.X >= X.Start & data$Gaze.X <= X.End, ]$Col <- (data[data$Gaze.X >= 
+        X.Start & data$Gaze.X <= X.End, ]$Gaze.X - X.Start)%/%X.Range + 1
+    data[data$Gaze.Y >= Y.Start & data$Gaze.Y <= Y.End, ]$Row <- (data[data$Gaze.Y >= 
+        Y.Start & data$Gaze.Y <= Y.End, ]$Gaze.Y - Y.Start)%/%Y.Range + 1
+    data[(data$Row * data$Col) != 0, ]$Plot <- data[(data$Row * data$Col) != 
+        0, ]$Col + nX * (data[(data$Row * data$Col) != 0, ]$Row - 1)
+    data$Plot <- as.character(data$Plot)
+    data$Plot <- as.numeric(data$Plot)
+    data$Pass <- 0
+    for (i in 3:(nrow(data) - 2)) data$Pass[i] <- (data$Plot[i - 1] - data$Plot[i - 
+        2])^2 + (data$Plot[i] - data$Plot[i - 1])^2 + (data$Plot[i + 1] - data$Plot[i])^2 + 
+        (data$Plot[i + 2] - data$Plot[i + 1])^2
+    data$Plot <- as.character(data$Plot)
+    data[data$Pass != 0, ]$Pass <- 9999
+    data$Pass[c(1, 2, nrow(data) - 1, nrow(data))] <- 9999
+    data$Pass[which(data$Pass != 9999)][1] <- 1
+    for (i in 2:length(which(data$Pass != 9999))) data[data$Pass != 9999, ]$Pass[i] <- if (which(data$Pass != 
+        9999)[i] == (which(data$Pass != 9999)[i - 1] + 1)) 
+        data$Pass[which(data$Pass != 9999)][i - 1] else (data$Pass[which(data$Pass != 9999)][i - 1] + 1)
+    data$Pupil <- 0
+    data[data$Left.Pupil.Diameter..mm. > 0 & data$Right.Pupil.Diameter..mm. > 
+        0, ]$Pupil <- (data[data$Left.Pupil.Diameter..mm. > 0 & data$Right.Pupil.Diameter..mm. > 
+        0, ]$Left.Pupil.Diameter..mm. + data[data$Left.Pupil.Diameter..mm. > 
+        0 & data$Right.Pupil.Diameter..mm. > 0, ]$Right.Pupil.Diameter..mm.)/2
+    data$Choose <- 1
+    data[data$Plot != data.choose, ]$Choose <- 0
+    data$Choose <- as.character(data$Choose)
+    data <- data[data$Ignore == 0 & data$Pass != 9999 & data$Plot != 0 & data$Pupil > 
+        0, ]
+    if (pdf == T) {
+        line.X <- geom_vline(x = c(X.Start, X.Start + X.Range, X.Start + X.Range * 
+            2, X.Start + X.Range * 3, X.Start + X.Range * 4, X.Start + X.Range * 
+            5), colour = I("white"))
+        line.Y <- geom_hline(y = c(-Y.Start, -Y.Start - Y.Range, -Y.Start - 
+            Y.Range * 2, -Y.Start - Y.Range * 3, -Y.Start - Y.Range * 4), colour = I("white"))
+        p1 <- qplot(Gaze.X, -Gaze.Y, data = data, alpha = I(0.3), size = Pupil/4, 
+            colour = Plot, xlim = c(0, lengthX), ylim = c(-lengthY, 0), xlab = "X", 
+            ylab = "Y", main = "Eye Position Coloured by Plots")
+        p1 + line.X + line.Y
+        ggsave(paste(data.name, "_plot1.pdf"), width = 16, height = 10)
+    }
+    if (pdf == F) {
+    }
+    data <- data
+}
+```
+
+
+The following code creates a data frame with the raw data from a participant:
+
+
+```r
+participant_data <- ET(T)
+```
+
+```
+## Error: file choice cancelled
+```
+
