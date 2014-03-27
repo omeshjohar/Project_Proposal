@@ -22,6 +22,7 @@ Are there any patterns in the way in which visual inferences are drawn? When pre
 Twenty-four students participated in an eye-tracking study. Each participant looked at nine line-ups of plots. For each line-up, participants selected a plot which was the "odd-one-out". Available data contain information about the x-y coordinates of their gaze (both eyes) along with time-stamps. Data for each combination of line-up and participant appear in a different file. This study was conducted by Dr. Dianne Cook and her colleagues. She will make the data available.  
 
 **Tasks**
+
 Data from different line-ups for each participant need to be collated and merged before processing. Therefore, I anticipate the use of "melting", aggregation, summarization, etc. Processing would involve identification of patterns in the way each participant arrived at an inference. Thus, I will examine the flow of gaze from one plot to another. In so doing, I will rely on the total time spent on a line-up, time spent on each plot, parts of each plot that participants paid attention to, and so on. 
 
 Given below is some R code which helps creating a usable data file from raw data from a participant (courtesy: Dr. Dianne Cook). 
