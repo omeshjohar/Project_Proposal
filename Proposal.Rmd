@@ -3,22 +3,31 @@ motivation, what data is available, and how the data is to be collected, collate
 should be a markdown document, loaded up to your own github repo, with the link emailed to the instructors
 
 
-The Statistical Eye: Patterns in visual inferences
+*The Statistical Eye: Patterns in visual inferences*
 ========================================================
 Omesh Johar
-========================================================
+--------------------------------------------------------
 STAT 585X Project Proposal
-========================================================
+--------------------------------------------------------
 
-Topic: This project is an attempt to explore ways in which visual inferences are drawn.
+**Topic**
 
-Motivation: Visual inference refers to the act (and the outcome) of drawing a statistical inference based on a visualization of data. Numerical statistics are not always available. Often, people need to draw inferences based on visual representations of data. However, more research is needed to understand the process by which people draw visual inferences.
+This project is an attempt to explore ways in which visual inferences are drawn.
 
-Questions: Are there any patterns in the way in which visual inferences are drawn? When presented with visual representations, how long do people take to form an inference? In doing so, do people sequentially go from one image to another, noticing minute details of every image? Or, is it a more top-down process, whereby people try to chunk different images based on certain attributes and later study every group? These are some of the questions of interest.
+**Motivation**
 
-Data: Twenty-four students participated in an eye-tracking study. Each participant looked at nine line-ups of plots. For each line-up, participants selected a plot which was the "odd-one-out". Available data contain information about the x-y coordinates of their gaze (both eyes) along with time-stamps. Data for each combination of line-up and participant appear in a different file. This study was conducted by Dr. Dianne Cook and her colleagues. She will make the data available.  
+Visual inference refers to the act (and the outcome) of drawing a statistical inference based on a visualization of data. Numerical statistics are not always available. Often, people need to draw inferences based on visual representations of data. However, more research is needed to understand the process by which people draw visual inferences.
 
-Tasks: Data from different line-ups for each participant need to be collated and merged before processing. Therefore, I anticipate the use of "melting", aggregation, summarization, etc. Processing would involve identification of patterns in the way each participant arrived at an inference. Thus, I will examine the flow of gaze from one plot to another. In so doing, I will rely on the total time spent on a line-up, time spent on each plot, parts of each plot that participants paid attention to, and so on. 
+**Questions**
+
+Are there any patterns in the way in which visual inferences are drawn? When presented with visual representations, how long do people take to form an inference? In doing so, do people sequentially go from one image to another, noticing minute details of every image? Or, is it a more top-down process, whereby people try to chunk different images based on certain attributes and later study every group? These are some of the questions of interest.
+
+**Data**
+
+Twenty-four students participated in an eye-tracking study. Each participant looked at nine line-ups of plots. For each line-up, participants selected a plot which was the "odd-one-out". Available data contain information about the x-y coordinates of their gaze (both eyes) along with time-stamps. Data for each combination of line-up and participant appear in a different file. This study was conducted by Dr. Dianne Cook and her colleagues. She will make the data available.  
+
+**Tasks**
+Data from different line-ups for each participant need to be collated and merged before processing. Therefore, I anticipate the use of "melting", aggregation, summarization, etc. Processing would involve identification of patterns in the way each participant arrived at an inference. Thus, I will examine the flow of gaze from one plot to another. In so doing, I will rely on the total time spent on a line-up, time spent on each plot, parts of each plot that participants paid attention to, and so on. 
 
 Given below is some R code which helps creating a usable data file from raw data from a participant (courtesy: Dr. Dianne Cook). 
 
@@ -97,4 +106,8 @@ data<-data;
 }
 ```
 
+The following code creates a data frame with the raw data from a participant:
 
+```{r}
+participant_data <- ET ( T )
+```
