@@ -1,8 +1,3 @@
-Draft of plan for the project to the instructors, including topic, questions of interest,
-motivation, what data is available, and how the data is to be collected, collated, merged, processed. This
-should be a markdown document, loaded up to your own github repo, with the link emailed to the instructors
-
-
 *The Statistical Eye: Patterns in visual inferences*
 ========================================================
 Omesh Johar
